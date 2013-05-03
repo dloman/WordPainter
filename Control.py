@@ -154,7 +154,7 @@ def PolarToCartesian(R, Theta, Phi):
   return R*sin(Theta)*cos(Phi), R*sin(Theta)*sin(Phi), R*cos(Theta)
 
 ########################################################################
-def CoordTransform(FontDict, \
+def DrawLetters(FontDict, \
                    String, \
                    Distance=69, \
                    InitialHeight=0, \
@@ -171,16 +171,18 @@ def CoordTransform(FontDict, \
 
   for Char in String:
     for Line in FontDict[Char].stroke_list:
-      x = Line.xstart+xOrigin; z = Line.ystart
+      x = Line.xstart+xOrigin; z = Line.ystart +yOrigin
       RStart, ThetaStart, PhiStart = CartesianToPolar(x,y,z)
 
       x = Line.xend+xOrigin; z = Line.yend
       REnd, ThetaEnd, PhiEnd = CartesianToPolar(x,y,z)
 
-      StepList.append((ThetaEnd - ThetaStart, PhiEnd-PhiStart))
+      MoveServos(ThetaEnd-ThetaStart, PhiEnd-PhiStart, 1)
     xOrigin += LetterSpacing
+  
     if Char == 'R':  #TODO: fix this hack
       xOrigin += LetterSpacing
+    MoveServos(xOrigin-ThetaEnd, yOrigin-PhiEnd, 0)
   return StepList
 
 
@@ -204,9 +206,10 @@ def PlotWord(FontDict, String):
   plt.show()
 
 ########################################################################
-def MoveServos(Theta,Phi):
+def MoveServos(Theta,Phi,Trigger):
   Serial.write(chr(Theta))
   Serial.write(chr(Phi))
+  Serial.write(chr(Trigger))
   Done = Serial.readline()
 
 ########################################################################
@@ -225,6 +228,4 @@ if __name__ == "__main__":
   FontDict = Parse(File)
   Sanitize(FontDict)
   MakeCharacterBigger(FontDict['R'])
-  StepList = CoordTransform(FontDict, InputString, LetterSpacing =10)
-  for Step in StepList:
-    MoveServos(Step[0],Step[1])
+  DrawLetters(FontDict, InputString, LetterSpacing =10)
