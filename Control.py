@@ -163,10 +163,6 @@ def CoordTransform(FontDict, \
   y = Distance #Distance from the wall will not change
   xOrigin = InitialOffset
   zOrigin = InitialHeight
-  #Plotting Stuff
-  #fig = plt.figure()
-  #plt.clf()
-  #ax = fig.add_subplot(111, projection='3d')
 
   #Move To Starting Position
   ROrigin, ThetaOrigin, PhiOrigin = CartesianToPolar(0,y,0)
@@ -182,14 +178,8 @@ def CoordTransform(FontDict, \
       REnd, ThetaEnd, PhiEnd = CartesianToPolar(x,y,z)
 
       StepList.append((ThetaEnd - ThetaStart, PhiEnd-PhiStart))
-      #xStart, yStart, zStart = PolarToCartesian(RStart, ThetaStart, PhiStart)
-      #xEnd, yEnd, zEnd = PolarToCartesian(REnd, ThetaEnd, PhiEnd)
-
-      #ax.plot([xStart,xEnd],[y,y],[zStart,zEnd])
     xOrigin += LetterSpacing
   return StepList
-  #ax.set_xlim(45,75)
-  #plt.show()
 
 
 ########################################################################
@@ -230,5 +220,4 @@ if __name__ == "__main__":
     exit()
   FontDict = Parse(File)
   Sanitize(FontDict)
-#  PlotWord(FontDict,InputString)
   print CoordTransform(FontDict, InputString, LetterSpacing =10)
