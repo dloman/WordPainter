@@ -89,7 +89,6 @@ def Parse(file):
       #
       line_num += 1
       end_char = re.match('^$', text) #blank line
-      print end_char
       if end_char and key: #save the character to our dictionary
           font[key] = Character(key)
           font[key].stroke_list = stroke_list
@@ -167,11 +166,10 @@ def DrawLetters(FontDict, \
   #Move To Starting Position
   ROrigin, ThetaOrigin, PhiOrigin = CartesianToPolar(0,y,0)
   RStart, ThetaStart, PhiStart = CartesianToPolar(xOrigin,y,zOrigin)
-  #StepList =[(ThetaStart-ThetaOrigin, PhiStart-PhiOrigin)]
 
   for Char in String:
     for Line in FontDict[Char].stroke_list:
-      x = Line.xstart+xOrigin; z = Line.ystart +yOrigin
+      x = Line.xstart+xOrigin; z = Line.ystart +zOrigin
       RStart, ThetaStart, PhiStart = CartesianToPolar(x,y,z)
 
       x = Line.xend+xOrigin; z = Line.yend
@@ -180,10 +178,7 @@ def DrawLetters(FontDict, \
       MoveServos(ThetaEnd-ThetaStart, PhiEnd-PhiStart, 1)
     xOrigin += LetterSpacing
   
-    if Char == 'R':  #TODO: fix this hack
-      xOrigin += LetterSpacing
-    MoveServos(xOrigin-ThetaEnd, yOrigin-PhiEnd, 0)
-  return StepList
+    MoveServos(xOrigin-ThetaEnd, zOrigin-PhiEnd, 0)
 
 
 ########################################################################
@@ -200,16 +195,16 @@ def PlotWord(FontDict, String):
                      [int(Line.ystart),\
                      int(Line.yend)])
     Origin+=10
-    if Char == 'R':  #TODO: fix this hack
-      Origin += 10 
   plt.ylim(ymin=-5,ymax=15)
   plt.show()
 
 ########################################################################
 def MoveServos(Theta,Phi,Trigger):
-  Serial.write(chr(Theta))
-  Serial.write(chr(Phi))
-  Serial.write(chr(Trigger))
+  print 'Theta = ',Theta, 'Phi = ', Phi, \
+        'Trigger = ' ,Trigger
+  #Serial.write(chr(int(100*Theta)))
+  #Serial.write(chr(int(100*Phi)))
+  #Serial.write(chr(Trigger))
   Done = Serial.readline()
 
 ########################################################################
@@ -227,5 +222,8 @@ if __name__ == "__main__":
     exit()
   FontDict = Parse(File)
   Sanitize(FontDict)
+  print InputString
+  print FontDict['i']
+  PlotWord(FontDict, InputString)
   MakeCharacterBigger(FontDict['R'])
-  DrawLetters(FontDict, InputString, LetterSpacing =10)
+  DrawLetters(FontDict, InputString, LetterSpacing =2)

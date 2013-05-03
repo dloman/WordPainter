@@ -1,12 +1,8 @@
-// Arduino Code:
-// Below, 'character' types are defined:  They hold 1 byte of data, 256 values.
-// A char can be interpreted as a small number (0-255) or as a member of the
-// ASCII set (which is what we deal with below).  Characters expressed as
-// ASCII are surrounded in single-quotes, like '5'.
-// Thus each char has a corresponding numeric value can thus be tested against.
+
+#include <Servo.h>
 
 int ledPin = 13; // select the pin for the LED
-int TestPin = 2;
+int TriggerPin = 2;
 int ThetaServo,PhiServo, Trigger;
 Servo Theta, Phi;
 String readString;
@@ -14,16 +10,12 @@ String readString;
 int ThetaPos=0,PhiPos=0;
 
 void setup() {
- pinMode(ledPin,OUTPUT);   // declare the LED's pin as output
- pinMode(TestPin,OUTPUT); 
- Serial.begin(9600);        // connect to the serial port
+ Serial.begin(9600); // connect to the serial port
+ Theta.attach(9);
+ Phi.attach(3);
+ pinMode(TriggerPin,OUTPUT);
 }
-
-
-void WriteTheta(int Theta)
-{
   
-
 void loop () 
 {
   while (Serial.available()) 
@@ -42,9 +34,17 @@ void loop ()
       Trigger    = int(readString[2]);
       Theta.write(ThetaServo);
       Phi.write(PhiServo);
+      if (Trigger == 0)
+      {
+        digitalWrite(TriggerPin, LOW);
+      }
+      if (Trigger == 1)
+      {
+        digitalWrite(TriggerPin, HIGH);
+      }
       delay(15);
       readString="";
-      Serial.write('*')
+      Serial.write('*');
     }
   } 
 }
