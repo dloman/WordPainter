@@ -68,7 +68,7 @@ def Sanitize(FontDict):
 
 ########################################################################
 def MakeCharacterBigger(Char,Scale=2.0):
-  for Line in Char:
+  for Line in Char.stroke_list:
     Line.xstart *= Scale  
     Line.xend   *= Scale  
 
@@ -179,6 +179,8 @@ def CoordTransform(FontDict, \
 
       StepList.append((ThetaEnd - ThetaStart, PhiEnd-PhiStart))
     xOrigin += LetterSpacing
+    if Char == 'R':  #TODO: fix this hack
+      xOrigin += LetterSpacing
   return StepList
 
 
@@ -189,13 +191,15 @@ def PlotWord(FontDict, String):
   ax = fig.add_subplot(111)
   Origin = 0
   for Char in String:
-    Origin+=5
+    Origin+=10
     for Line in FontDict[Char].stroke_list:
       res = ax.plot([int(Origin+Line.xstart),\
                      int(Origin+Line.xend)],\
                      [int(Line.ystart),\
                      int(Line.yend)])
-    Origin+=5
+    Origin+=10
+    if Char == 'R':  #TODO: fix this hack
+      Origin += 10 
   plt.ylim(ymin=-5,ymax=15)
   plt.show()
 
@@ -220,4 +224,5 @@ if __name__ == "__main__":
     exit()
   FontDict = Parse(File)
   Sanitize(FontDict)
-  print CoordTransform(FontDict, InputString, LetterSpacing =10)
+  MakeCharacterBigger(FontDict['R'])
+  StepListCoordTransform(FontDict, InputString, LetterSpacing =10)
