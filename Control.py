@@ -205,9 +205,9 @@ def PlotWord(FontDict, String):
 
 ########################################################################
 def MoveServos(Theta,Phi):
-  Serial.write(chr(255))
   Serial.write(chr(Theta))
   Serial.write(chr(Phi))
+  Done = Serial.readline()
 
 ########################################################################
 ########################################################################
@@ -225,4 +225,6 @@ if __name__ == "__main__":
   FontDict = Parse(File)
   Sanitize(FontDict)
   MakeCharacterBigger(FontDict['R'])
-  StepListCoordTransform(FontDict, InputString, LetterSpacing =10)
+  StepList = CoordTransform(FontDict, InputString, LetterSpacing =10)
+  for Step in StepList:
+    MoveServos(Step[0],Step[1])
