@@ -167,7 +167,7 @@ def DrawLetters(FontDict, \
   #Move To Starting Position
   ROrigin, ThetaOrigin, PhiOrigin = CartesianToPolar(0,y,0)
   RStart, ThetaStart, PhiStart = CartesianToPolar(xOrigin,y,zOrigin)
-  StepList =[(ThetaStart-ThetaOrigin, PhiStart-PhiOrigin)]
+  #StepList =[(ThetaStart-ThetaOrigin, PhiStart-PhiOrigin)]
 
   for Char in String:
     for Line in FontDict[Char].stroke_list:
