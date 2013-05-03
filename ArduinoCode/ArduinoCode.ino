@@ -7,8 +7,11 @@
 
 int ledPin = 13; // select the pin for the LED
 int TestPin = 2;
-int xServo,yServo, ServoId;
+int ThetaServo,PhiServo, Trigger;
+Servo Theta, Phi;
 String readString;
+
+int ThetaPos=0,PhiPos=0;
 
 void setup() {
  pinMode(ledPin,OUTPUT);   // declare the LED's pin as output
@@ -34,23 +37,12 @@ void loop ()
           
     if (readString.length() >1) 
     {
-      xServo = int(readString[0]);
-      yServo = int(readString[1]);
-      for (int i=0;i<xServo;i++)
-      {
-        digitalWrite(ledPin,HIGH);
-        delay(250);
-        digitalWrite(ledPin,LOW);
-        delay(250);
-      }
-      
-      for (int i=0;i<yServo;i++)
-      {
-        digitalWrite(TestPin,HIGH);
-        delay(250);
-        digitalWrite(TestPin,LOW);
-        delay(250);
-      }
+      ThetaServo = int(readString[0]);
+      PhiServo   = int(readString[1]);
+      Trigger    = int(readString[2]);
+      Theta.write(ThetaServo);
+      Phi.write(PhiServo);
+      delay(15);
       readString="";
       Serial.write('*')
     }
