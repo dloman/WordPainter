@@ -142,11 +142,19 @@ def Parse(file):
   return font
 
 ########################################################################
+def Calibrate():
+  MoveServos(45,45,0)
+  MoveServos(-45,45,0)
+  MoveServos(45,-45,0)
+  MoveServos(-45,-45,0)
+
+
+########################################################################
 def R(x,y,z):
   return sqrt(x**2 + y**2 + z**2)
 ########################################################################
 def CartesianToPolar(x,y,z):
-  return R(x,y,z),acos(z/R(x,y,z)), atan(y/R(x,y,z))
+  return R(x,y,z),acos(z/R(x,y,z)), atan2(y,x)
 
 ########################################################################
 def PolarToCartesian(R, Theta, Phi):
@@ -168,17 +176,21 @@ def DrawLetters(FontDict, \
   RStart, ThetaStart, PhiStart = CartesianToPolar(xOrigin,y,zOrigin)
 
   for Char in String:
+    print 'Begining Char ',Char
     for Line in FontDict[Char].stroke_list:
       x = Line.xstart+xOrigin; z = Line.ystart +zOrigin
+      #print 'Begining x',x,'Begin z',z
       RStart, ThetaStart, PhiStart = CartesianToPolar(x,y,z)
+      MoveServos(degrees(ThetaStart)-90, (degrees(PhiStart)-90), 0)
 
       x = Line.xend+xOrigin; z = Line.yend
+      #print 'endx',x,'end z',z
       REnd, ThetaEnd, PhiEnd = CartesianToPolar(x,y,z)
 
-      MoveServos(ThetaEnd-ThetaStart, PhiEnd-PhiStart, 1)
+      MoveServos(degrees(ThetaEnd)-90, (degrees(PhiEnd)-90), 1)
     xOrigin += LetterSpacing
+    print ''
   
-    MoveServos(xOrigin-ThetaEnd, zOrigin-PhiEnd, 0)
 
 
 ########################################################################
@@ -202,9 +214,9 @@ def PlotWord(FontDict, String):
 def MoveServos(Theta,Phi,Trigger):
   print 'Theta = ',Theta, 'Phi = ', Phi, \
         'Trigger = ' ,Trigger
-  #Serial.write(chr(int(100*Theta)))
-  #Serial.write(chr(int(100*Phi)))
-  #Serial.write(chr(Trigger))
+  Serial.write(chr(int(100*Theta)))
+  Serial.write(chr(int(100*Phi)))
+  Serial.write(chr(Trigger))
   Done = Serial.readline()
 
 ########################################################################
@@ -213,8 +225,8 @@ if __name__ == "__main__":
   if len(sys.argv) < 2:
     print "USAGE: Control.py FontFile InputString"
     exit()
-  FontFile = sys.argv[1]
-  InputString = sys.argv[2]
+  FontFile     = sys.argv[1]
+  InputString  = sys.argv[2]
   try:
     File = open(FontFile)
   except:
@@ -222,8 +234,6 @@ if __name__ == "__main__":
     exit()
   FontDict = Parse(File)
   Sanitize(FontDict)
-  print InputString
-  print FontDict['i']
-  PlotWord(FontDict, InputString)
+#  PlotWord(FontDict, InputString)
   MakeCharacterBigger(FontDict['R'])
-  DrawLetters(FontDict, InputString, LetterSpacing =2)
+  DrawLetters(FontDict, InputString, Distance = 25,LetterSpacing =2)
